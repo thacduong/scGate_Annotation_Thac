@@ -10,16 +10,16 @@ library(purrr)
 
 ##### User Input and Output #####
 # Input File
-sc_RNAseq_dir = "/single_cell_analysis_GSE205013/GSM6204109_P01/Data" 
+sc_RNAseq_dir = "/single_cell_analysis_GSE205013/GSM6204110_P02/Data" 
 
 # Project name
 Prj = "GSE205013"
 
 # Output File 1 cell-level meta
-meta_dir = "meta_data_combined"
+meta_dir = "GSM6204110_P02_meta_data_combined"
 
 # Output File 2 cluster level annotatiion
-cluster_annotation_dir = "cluster_annotation_percentage"
+cluster_annotation_dir = "GSM6204110_P02_cluster_annotation_percentage"
 
 
 
@@ -75,6 +75,7 @@ seu_obj.markers %>%
 
 ##### scGate Annoatation #####
 # List of model names and corresponding scGate models
+scGate_models_DB <-  get_scGateDB()
 models <- list(
   CD4_TIL = scGate_models_DB$human$CD4_TIL,
   CD8_TIL = scGate_models_DB$human$CD8_TIL,
@@ -144,15 +145,12 @@ for (new_col in new_columns_list) {
 # Update the original Seurat object with the combined metadata
 seu_obj@meta.data <- meta_data_combined
 
-# Generate the combined metadata to a csv file
-write.csv(meta_data_combined, file = paste0(getwd(), "/", meta_dir, ".csv"))
-
 
 
 ##### Cluster annotation #####
 # Automated annotation using SingleR
 reference_HPCA <- celldex::HumanPrimaryCellAtlasData()
-singleR_result_HPCA <- SingleR(test = seu_obj@assays$RNA$data, ref = reference_HPCA, labels = reference$label.main)
+singleR_result_HPCA <- SingleR(test = seu_obj@assays$RNA$data, ref = reference_HPCA, labels = reference_HPCA$label.main)
 seu_obj$SingleR.labels.HPCA <- singleR_result_HPCA$labels
 Idents(seu_obj) = "SingleR.labels.HPCA"
 DimPlot(seu_obj, reduction = "umap", label = T, label.size = 3) + ggtitle("SingleR annotation HPCA")
@@ -177,7 +175,7 @@ for (cell_type_col in cell_type_columns) {
     cluster = Idents(seu_obj), 
     cell_type = seu_obj[[cell_type_col]]
   )
-  View(cluster_celltype_df)
+  cluster_celltype_df
   
   # Rename the cell_type column if it's not named correctly
   colnames(cluster_celltype_df)[2] <- "cell_type"
@@ -214,30 +212,5 @@ View(cluster_percentage_strings_combined)
 # Generate cluster level annotation
 write.csv(cluster_percentage_strings_combined, file = paste0(getwd(), "/", cluster_annotation_dir, ".csv"))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Generate the combined metadata to a csv file
+write.csv(seu_obj@meta.data, file = paste0(getwd(), "/", meta_dir, ".csv"))
