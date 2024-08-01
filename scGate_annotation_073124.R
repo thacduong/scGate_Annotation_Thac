@@ -109,6 +109,7 @@ for (model_name in names(models)) {
   # Extract metadata
   meta_data <- seu_obj_processed@meta.data
   
+  ##### Process "is.pure_" Columns #####
   # Identify columns that start with "is.pure_"
   pure_columns <- grep("^is.pure_", colnames(meta_data), value = TRUE)
   
@@ -132,8 +133,18 @@ for (model_name in names(models)) {
   # Store the new column in the list
   new_columns_list[[new_col_name]] <- meta_data[, new_col_name, drop = F]
   
+  ##### Process "scGate_multi" Column #####
+  if ("scGate_multi" %in% colnames(meta_data)) {
+    multi_col_name <- paste0("scGate_multi_", model_name)
+    meta_data[[multi_col_name]] <- meta_data[["scGate_multi"]]
+    
+    # Store the renamed "scGate_multi" column in the list
+    new_columns_list[[multi_col_name]] <- meta_data[, multi_col_name, drop = F]
+  }
+  
   # Save the metadata to a CSV file
   write.csv(meta_data, file = paste0(dir, "/meta_data_", model_name, ".csv"))
+  View(meta_data)
 }
 
 # Combine the original metadata with the new columns
@@ -147,6 +158,7 @@ for (new_col in new_columns_list) {
 
 # Update the original Seurat object with the combined metadata
 seu_obj@meta.data <- meta_data_combined
+View(seu_obj@meta.data)
 
 
 
@@ -217,3 +229,9 @@ write.csv(cluster_percentage_strings_combined, file = paste0(dir, "/", cluster_a
 
 # Generate the combined metadata to a csv file
 write.csv(seu_obj@meta.data, file = paste0(dir, "/", meta_dir, ".csv"))
+
+
+##### Generate Umap #####
+# Metadata column to group
+group_col = "scGate_multi_generic"
+DimPlot(seu_obj, reduction = 'umap', group.by = group_col, label = T, label.size = 3) + ggtitle(group_col)
