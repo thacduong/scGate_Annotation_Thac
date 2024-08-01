@@ -15,6 +15,9 @@ sc_RNAseq_dir = "/single_cell_analysis_GSE205013/GSM6204110_P02/Data"
 # Project name
 Prj = "GSE205013"
 
+# Output directory
+dir = getwd()
+
 # Output File 1 cell-level meta
 meta_dir = "GSM6204110_P02_meta_data_combined"
 
@@ -25,7 +28,7 @@ cluster_annotation_dir = "GSM6204110_P02_cluster_annotation_percentage"
 
 ##### Load in seurat object #####
 # Load the sc-RNAseq dataset
-pdac.data <- Read10X(data.dir = paste0(getwd(), sc_RNAseq_dir))
+pdac.data <- Read10X(data.dir = paste0(dir, sc_RNAseq_dir))
 
 # Initialize the Seurat object with the raw (non-normalized data).
 seu_obj <- CreateSeuratObject(counts = pdac.data, project = Prj, min.cells = 3, min.features = 200)
@@ -130,7 +133,7 @@ for (model_name in names(models)) {
   new_columns_list[[new_col_name]] <- meta_data[, new_col_name, drop = F]
   
   # Save the metadata to a CSV file
-  write.csv(meta_data, file = paste0(getwd(), "/meta_data_", model_name, ".csv"))
+  write.csv(meta_data, file = paste0(dir, "/meta_data_", model_name, ".csv"))
 }
 
 # Combine the original metadata with the new columns
@@ -210,7 +213,7 @@ cluster_percentage_strings_combined <- reduce(cluster_percentage_list, full_join
 View(cluster_percentage_strings_combined)
 
 # Generate cluster level annotation
-write.csv(cluster_percentage_strings_combined, file = paste0(getwd(), "/", cluster_annotation_dir, ".csv"))
+write.csv(cluster_percentage_strings_combined, file = paste0(dir, "/", cluster_annotation_dir, ".csv"))
 
 # Generate the combined metadata to a csv file
-write.csv(seu_obj@meta.data, file = paste0(getwd(), "/", meta_dir, ".csv"))
+write.csv(seu_obj@meta.data, file = paste0(dir, "/", meta_dir, ".csv"))
