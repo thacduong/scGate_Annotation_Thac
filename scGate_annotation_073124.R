@@ -187,7 +187,7 @@ cluster_percentage_list <- list()
 for (cell_type_col in cell_type_columns) {
   # Generate a df with cluster and cell type information
   cluster_celltype_df <- data.frame(
-    cluster = Idents(seu_obj), 
+    cluster = seu_obj[['SCT_snn_res.0.5']], 
     cell_type = seu_obj[[cell_type_col]]
   )
   cluster_celltype_df
