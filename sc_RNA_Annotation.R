@@ -170,8 +170,7 @@ View(seu_obj@meta.data)
 reference_HPCA <- celldex::HumanPrimaryCellAtlasData()
 singleR_result_HPCA <- SingleR(test = seu_obj@assays$RNA$data, ref = reference_HPCA, labels = reference_HPCA$label.main)
 seu_obj$SingleR.labels.HPCA <- singleR_result_HPCA$labels
-Idents(seu_obj) = "SingleR.labels.HPCA"
-DimPlot(seu_obj, reduction = "umap", label = T, label.size = 3) + ggtitle("SingleR annotation HPCA")
+DimPlot(seu_obj, reduction = "umap", group.by = "SingleR.labels.HPCA", label = T, label.size = 3) + ggtitle("SingleR annotation HPCA")
 
 
 
@@ -278,24 +277,3 @@ write.csv(seu_obj@meta.data, file = paste0(dir, "/", meta_dir, ".csv"))
 # # Metadata column to group
 # group_col = "scGate_multi_generic"
 # DimPlot(seu_obj, reduction = 'umap', group.by = group_col, label = T, label.size = 3) + ggtitle(group_col)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
